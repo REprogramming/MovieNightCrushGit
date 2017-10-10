@@ -1,36 +1,57 @@
 package com.filip.movienightcrush;
 
-/**
- * Created by RE1010 on 2017-10-02.
- */
-
-import android.widget.Button;
-
 import com.filip.androidgames.framework.Game;
 import com.filip.androidgames.framework.Graphics;
 import com.filip.androidgames.framework.Input.TouchEvent;
 import com.filip.androidgames.framework.Pixmap;
 import com.filip.androidgames.framework.Screen;
+
 import java.util.List;
 
-public class MainMenuScreen extends Screen {
+/**
+ * Created by Emily on 10/4/2017.
+ */
 
+public class MainMenuScreen extends Screen{
     private static Pixmap background;
+    private static Pixmap movieNightCrushLogo;
     private static Pixmap playButton;
     private static Pixmap instructionsButton;
     private static Pixmap settingsButton;
+    private static Pixmap leaderboardButton;
 
+    private int logoXPos;
+    private int logYPos;
     private int playXPos;
     private int playYPos;
+    private int instructionsXPos;
+    private int instructionsYPos;
+    private int settingsXPos;
+    private int settingsYPos;
+    private int leaderboardXPos;
+    private int leaderboardYPos;
 
     public MainMenuScreen(Game game){
         super(game);
         Graphics g = game.getGraphics();
         background = g.newPixmap("background.png", Graphics.PixmapFormat.RGB565);
-        playButton = g.newPixmap("playButton.png", Graphics.PixmapFormat.ARGB4444);
+        movieNightCrushLogo = g.newPixmap("movieNightCrushLogo.png", Graphics.PixmapFormat.RGB565);
+        playButton = g.newPixmap("playButton.png", Graphics.PixmapFormat.RGB565);
+        instructionsButton = g.newPixmap("instructionsButton.png", Graphics.PixmapFormat.RGB565);
+        settingsButton = g.newPixmap("settingsButton.png", Graphics.PixmapFormat.RGB565);
+        leaderboardButton = g.newPixmap("leaderboardButton.png", Graphics.PixmapFormat.RGB565);
 
+        logoXPos = g.getWidth() / 2 - movieNightCrushLogo.getWidth() / 2;
         playXPos = g.getWidth() / 2 - playButton.getWidth() / 2;
+        instructionsXPos = g.getWidth() / 2 - instructionsButton.getWidth() / 2;
+        settingsXPos = g.getWidth() / 2 - settingsButton.getWidth() / 2;
+        leaderboardXPos = g.getWidth() / 2 - leaderboardButton.getWidth() / 2;
+
         playYPos = g.getHeight() / 2 - playButton.getHeight() / 2;
+        logYPos = playYPos - 400;
+        instructionsYPos = playYPos + 100;
+        settingsYPos = playYPos + 200;
+        leaderboardYPos = playYPos + 300;
     }
 
     @Override
@@ -45,6 +66,18 @@ public class MainMenuScreen extends Screen {
                     game.setScreen(new GameScreen(game));
                     return;
                 }
+                if (inBounds(event, instructionsXPos, instructionsYPos, instructionsButton.getWidth(), instructionsButton.getHeight())){
+                    game.setScreen(new InstructionsScreen(game));
+                    return;
+                }
+                if (inBounds(event, settingsXPos, settingsYPos, settingsButton.getWidth(), settingsButton.getHeight())){
+                    game.setScreen(new SettingScreen(game));
+                    return;
+                }
+                if (inBounds(event, leaderboardXPos, leaderboardYPos, leaderboardButton.getWidth(), leaderboardButton.getHeight())){
+                    game.setScreen(new LeaderBoardScreen(game));
+                    return;
+                }
             }
         }
     }
@@ -53,7 +86,11 @@ public class MainMenuScreen extends Screen {
     public void present(float deltaTime){
         Graphics g = game.getGraphics();
         g.drawPixmap(background, 0, 0);
+        g.drawPixmap(movieNightCrushLogo, logoXPos, logYPos);
         g.drawPixmap(playButton, playXPos, playYPos);
+        g.drawPixmap(instructionsButton, instructionsXPos, instructionsYPos);
+        g.drawPixmap(settingsButton, settingsXPos, settingsYPos);
+        g.drawPixmap(leaderboardButton, leaderboardXPos, leaderboardYPos);
     }
 
     @Override

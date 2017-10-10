@@ -1,9 +1,5 @@
 package com.filip.movienightcrush;
 
-/**
- * Created by RE1010 on 2017-10-02.
- */
-
 import com.filip.androidgames.framework.Game;
 import com.filip.androidgames.framework.Graphics;
 import com.filip.androidgames.framework.Input.TouchEvent;
@@ -11,27 +7,28 @@ import com.filip.androidgames.framework.Pixmap;
 import com.filip.androidgames.framework.Screen;
 
 import java.util.List;
-import java.util.Random;
 
 public class GameScreen extends Screen {
-
-
     private static Pixmap background;
-    private static Pixmap numbers;
+    public static Pixmap optionsButton;
+    public static Pixmap gameOverButton;
 
-
-    private int oldScore;
-    private String score = "0";
-
-    private float timePassed;
-
-    private Random random = new Random();
+    private int optionXPos;
+    private int optionYPos;
+    private int gameOverXPos;
+    private int gameOverYPos;
 
     public GameScreen(Game game){
         super(game);
         Graphics g = game.getGraphics();
-        background = g.newPixmap("background.png", Graphics.PixmapFormat.RGB565);
-        numbers = g.newPixmap("numbers.png", Graphics.PixmapFormat.ARGB4444);
+        background = g.newPixmap("gameBackground.png", Graphics.PixmapFormat.RGB565);
+        optionsButton = g.newPixmap("optionsButton.png", Graphics.PixmapFormat.RGB565);
+        gameOverButton = g.newPixmap("gameOverButton.png", Graphics.PixmapFormat.RGB565);
+
+        optionXPos = g.getWidth() / 2 - optionsButton.getWidth() / 2;
+        optionYPos = g.getHeight() - optionsButton.getHeight();
+        gameOverXPos = 0;
+        gameOverYPos = optionYPos;
     }
 
     @Override
@@ -41,9 +38,25 @@ public class GameScreen extends Screen {
         int len = touchEvents.size();
         for(int i = 0; i < len; i++) {
             TouchEvent event = touchEvents.get(i);
+            if(event.type == TouchEvent.TOUCH_UP){
+                if (inBounds(event, optionXPos, optionYPos, optionsButton.getWidth(), optionsButton.getHeight())){
+                    game.setScreen(new OptionsScreen(game));
+                    return;
+                }
+                if (inBounds(event, gameOverXPos, gameOverYPos, gameOverButton.getWidth(), gameOverButton.getHeight())){
+                    game.setScreen(new GameOverScreen(game));
+                    return;
+                }
+            }
         }
+    }
 
-
+    @Override
+    public void present(float deltaTime){
+        Graphics g = game.getGraphics();
+        g.drawPixmap(background, 20, -10);
+        g.drawPixmap(optionsButton, optionXPos, optionYPos);
+        g.drawPixmap(gameOverButton, gameOverXPos, gameOverYPos);
     }
 
     @Override
@@ -54,35 +67,4 @@ public class GameScreen extends Screen {
 
     @Override
     public void dispose(){}
-
-    @Override
-    public void present(float deltaTime){
-        Graphics g = game.getGraphics();
-        g.drawPixmap(background, 0, 0);
-        drawText(g, score, g.getWidth() / 2 - score.length() * 20 / 2, g.getHeight() - 42);
-    }
-
-    public void drawText(Graphics g, String line, int x, int y){
-        int len = line.length();
-        for (int i = 0; i < len; i++){
-            char character = line.charAt(i);
-
-            if(character == ' '){
-                x += 20;
-                continue;            }
-
-            int srcX;
-            int srcWidth;
-            if(character == '.'){
-                srcX = 200;
-                srcWidth = 10;
-            }else {
-                srcX = (character - '0') * 20;
-                srcWidth = 20;
-            }
-
-            g.drawPixmap(numbers, x, y, srcX, 0, srcWidth, 32);
-            x += srcWidth;
-        }
-    }
 }

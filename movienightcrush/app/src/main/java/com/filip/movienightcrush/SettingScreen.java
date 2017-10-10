@@ -8,17 +8,17 @@ import com.filip.androidgames.framework.Screen;
 
 import java.util.List;
 
-public class LeaderBoardScreen extends Screen {
+public class SettingScreen extends Screen {
     private static Pixmap background;
     public static Pixmap backButton;
 
     private int backXPos;
     private int backYPos;
 
-    public LeaderBoardScreen(Game game){
+    public SettingScreen(Game game){
         super(game);
         Graphics g = game.getGraphics();
-        background = g.newPixmap("leaderBoardBackground.png", Graphics.PixmapFormat.RGB565);
+        background = g.newPixmap("settingsBackground.png", Graphics.PixmapFormat.RGB565);
         backButton = g.newPixmap("backButton.png", Graphics.PixmapFormat.RGB565);
 
         backXPos = g.getWidth() / 2 - backButton.getWidth() / 2;
