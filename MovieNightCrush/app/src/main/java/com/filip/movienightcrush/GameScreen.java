@@ -13,6 +13,8 @@ public class GameScreen extends Screen {
     public static Pixmap optionsButton;
     public static Pixmap gameOverButton;
 
+    private Grid gameGrid;
+
     private int optionXPos;
     private int optionYPos;
     private int gameOverXPos;
@@ -21,9 +23,11 @@ public class GameScreen extends Screen {
     public GameScreen(Game game){
         super(game);
         Graphics g = game.getGraphics();
-        background = g.newPixmap("gameBackground.png", Graphics.PixmapFormat.RGB565);
+        background = g.newPixmap("gameBackgroundBlank.png", Graphics.PixmapFormat.RGB565);
         optionsButton = g.newPixmap("optionsButton.png", Graphics.PixmapFormat.RGB565);
         gameOverButton = g.newPixmap("gameOverButton.png", Graphics.PixmapFormat.RGB565);
+
+        gameGrid = new Grid(g);
 
         optionXPos = g.getWidth() / 2 - optionsButton.getWidth() / 2;
         optionYPos = g.getHeight() - optionsButton.getHeight();
@@ -54,9 +58,13 @@ public class GameScreen extends Screen {
     @Override
     public void present(float deltaTime){
         Graphics g = game.getGraphics();
-        g.drawPixmap(background, 20, -10);
+        g.drawPixmap(background, 0, 0);
         g.drawPixmap(optionsButton, optionXPos, optionYPos);
         g.drawPixmap(gameOverButton, gameOverXPos, gameOverYPos);
+        gameGrid.show(g);
+
+
+
     }
 
     @Override
