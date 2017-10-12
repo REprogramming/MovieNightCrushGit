@@ -1,6 +1,7 @@
 package com.filip.androidgames.framework.impl;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -23,6 +24,13 @@ public abstract class AndroidGame extends Activity implements Game {
     Input input;
     FileIO fileIO;
     Screen screen;
+
+    private static Context context;
+
+    static public Context GetContext()
+    {
+        return context;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +58,9 @@ public abstract class AndroidGame extends Activity implements Game {
         audio = new AndroidAudio(this);
         input = new AndroidInput(this, renderView, scaleX, scaleY);
         screen = getStartScreen();
+
+        AndroidGame.context = getApplicationContext();
+
         setContentView(renderView);
     }
 

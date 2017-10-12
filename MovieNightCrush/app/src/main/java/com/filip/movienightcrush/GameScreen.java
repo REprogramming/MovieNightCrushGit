@@ -33,6 +33,9 @@ public class GameScreen extends Screen {
         optionYPos = g.getHeight() - optionsButton.getHeight();
         gameOverXPos = 0;
         gameOverYPos = optionYPos;
+
+
+
     }
 
     @Override
@@ -51,6 +54,17 @@ public class GameScreen extends Screen {
                     game.setScreen(new GameOverScreen(game));
                     return;
                 }
+
+                for(int x = 0; x < 9; x++) {
+                    for(int y = 0; y < 9; y++)
+                    {
+                        if (inBounds(event, Grid.g[x][y].x, Grid.g[x][y].y, Grid.g[x][y].image.getWidth(), Grid.g[x][y].image.getHeight())){
+                            gameGrid.swap(Grid.g[x][y]);
+                            return;
+                        }
+                    }
+                }
+
             }
         }
     }

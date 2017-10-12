@@ -6,6 +6,7 @@ package com.filip.movienightcrush;
 
 import android.util.Log;
 import com.filip.androidgames.framework.Graphics;
+import com.filip.androidgames.framework.Pixmap;
 
 
 import java.util.Random;
@@ -15,6 +16,8 @@ public class Grid {
     private static final String TAG = GameScreen.class.getSimpleName();
     Random rn = new Random();
 
+    static FoodPiece lastTouch;
+
     static final int ROWS = 9;
     static final int COLS = 9;
     static final int TILE_WIDTH = 72;
@@ -23,7 +26,53 @@ public class Grid {
     int centerWtoScreen = 80;
     int centerHtoScreen = 260;
 
-    FoodPiece[][] g = new FoodPiece[9][9];
+    static FoodPiece[][] g = new FoodPiece[COLS][ROWS];
+
+    public void swap(FoodPiece food)
+    {
+        if(lastTouch == null)
+        {
+            lastTouch = food;
+        }else
+        {
+
+            if(((food.colIndex == lastTouch.colIndex-1 ||food.colIndex == lastTouch.colIndex+1 )&&(food.rowIndex == lastTouch.rowIndex))
+                    || ((food.rowIndex == lastTouch.rowIndex-1 ||food.rowIndex == lastTouch.rowIndex+1)&& (food.colIndex == lastTouch.colIndex))) {
+
+                FoodType tempType = food.food;
+                Pixmap tempPix = food.image;
+                g[food.colIndex][food.rowIndex].image = g[lastTouch.colIndex][lastTouch.rowIndex].image;
+                g[food.colIndex][food.rowIndex].food = g[lastTouch.colIndex][lastTouch.rowIndex].food;
+                g[lastTouch.colIndex][lastTouch.rowIndex].image = tempPix;
+                g[lastTouch.colIndex][lastTouch.rowIndex].food = tempType;
+
+
+                //Check for matches
+                g[lastTouch.colIndex][lastTouch.rowIndex].isMatch();
+
+
+                g[food.colIndex][food.rowIndex].isMatch();
+
+
+                lastTouch = null;
+
+            }
+
+
+
+
+            //g[food.colIndex][food.rowIndex].CheckForMatch( g[food.colIndex][food.rowIndex].food);
+
+            /*for (int i = 0; i <  ROWS; i++) {
+                for (int j = 0; j < COLS; j++) {
+                    g[i][j].CheckForMatch(g[i][j].food);
+                }
+            }*/
+
+
+
+        }
+    }
 
     public Grid(Graphics graphics)
     {
@@ -32,7 +81,8 @@ public class Grid {
             for(int j=0; j < ROWS; j++)
             {
                 int answer = rn.nextInt(8) + 0;
-                g[i][j] = new FoodPiece(i * TILE_WIDTH + centerWtoScreen, j * TILE_HEIGHT + centerHtoScreen, FoodType.values()[answer], graphics );
+                //g[i][j] = new FoodPiece(i * TILE_WIDTH + centerWtoScreen, j * TILE_HEIGHT + centerHtoScreen,FoodType.BEER, graphics, i, j);
+                g[i][j] = new FoodPiece(i * TILE_WIDTH + centerWtoScreen, j * TILE_HEIGHT + centerHtoScreen, FoodType.values()[answer], graphics, i, j);
                 Log.d(TAG, "Grid: " + i + " " + j + "Foodtype: " + FoodType.values()[answer]);
             }
         }
