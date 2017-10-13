@@ -26,18 +26,45 @@ public class Grid {
     int centerWtoScreen = 80;
     int centerHtoScreen = 260;
 
-    static FoodPiece[][] g = new FoodPiece[COLS][ROWS];
+    static FoodPiece[][] g = new FoodPiece[COLS][ROWS]; // this will never change either it's images or it's food items.
 
     public void swap(FoodPiece food)
     {
         if(lastTouch == null)
         {
             lastTouch = food;
-        }else
+        }
+        else
         {
+            if(food.colIndex == lastTouch.colIndex - 1
+                    || food.colIndex == lastTouch.colIndex + 1
+                        || food.rowIndex == lastTouch.rowIndex - 1
+                            || food.rowIndex == lastTouch.rowIndex + 1
+                                && food.rowIndex == lastTouch.rowIndex || food.colIndex == lastTouch.colIndex)
+            {
+                // Swap food items
+                FoodType tempType = food.food;
+                Pixmap tempPix = food.image;
 
-            if(((food.colIndex == lastTouch.colIndex-1 ||food.colIndex == lastTouch.colIndex+1 )&&(food.rowIndex == lastTouch.rowIndex))
-                    || ((food.rowIndex == lastTouch.rowIndex-1 ||food.rowIndex == lastTouch.rowIndex+1)&& (food.colIndex == lastTouch.colIndex))) {
+                // Change images of objects, but keep them where they are (no passing by reference in Java?!?)
+                this.g[food.colIndex][food.rowIndex].image = g[lastTouch.colIndex][lastTouch.rowIndex].image;
+                this.g[lastTouch.colIndex][lastTouch.rowIndex].image = tempPix;
+                //this.g[food.colIndex][food.rowIndex].food = g[lastTouch.colIndex][lastTouch.rowIndex].food;
+            }
+                // Now..check for matches
+                // I don't think having 2 checks on two different objects is how candy crush works, it's a match from the lastTouch object...
+                this.g[lastTouch.colIndex][lastTouch.rowIndex].matchCheck();
+                //this.g[food.colIndex][food.rowIndex].matchCheck();
+
+                lastTouch = null;
+            }
+
+
+            /*if(((food.colIndex == lastTouch.colIndex-1
+                        ||food.colIndex == lastTouch.colIndex+1 )&&(food.rowIndex == lastTouch.rowIndex))
+                            || ((food.rowIndex == lastTouch.rowIndex-1
+                                ||food.rowIndex == lastTouch.rowIndex+1)
+                                    && (food.colIndex == lastTouch.colIndex))) {
 
                 FoodType tempType = food.food;
                 Pixmap tempPix = food.image;
@@ -56,11 +83,7 @@ public class Grid {
 
                 lastTouch = null;
 
-            }
-
-
-
-
+            }*/
             //g[food.colIndex][food.rowIndex].CheckForMatch( g[food.colIndex][food.rowIndex].food);
 
             /*for (int i = 0; i <  ROWS; i++) {
@@ -69,9 +92,6 @@ public class Grid {
                 }
             }*/
 
-
-
-        }
     }
 
     public Grid(Graphics graphics)

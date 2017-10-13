@@ -34,14 +34,11 @@ public class GameScreen extends Screen {
         gameOverXPos = 0;
         gameOverYPos = optionYPos;
 
-
-
     }
 
     @Override
     public void update(float deltaTime){
         List<TouchEvent> touchEvents = game.getInput().getTouchEvents();
-
         int len = touchEvents.size();
         for(int i = 0; i < len; i++) {
             TouchEvent event = touchEvents.get(i);

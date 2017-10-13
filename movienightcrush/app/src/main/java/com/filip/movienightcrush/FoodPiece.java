@@ -20,14 +20,15 @@ import java.util.Random;
 
 public class FoodPiece {
     FoodType food;
-    int x;
-    int y;
-    int rowIndex;
-    int colIndex;
+    public int x;
+    public int y;
+    public int rowIndex;
+    public int colIndex;
     public Pixmap image;
     List<FoodType> randomList;
     int iteration;
     List<FoodPiece> tempMatches;
+
 
     public FoodPiece(int _x, int _y, FoodType _foodType, Graphics g, int _colIndex, int _rowIndex)
     {
@@ -92,19 +93,40 @@ public class FoodPiece {
 
     }
 
+    public void matchCheck() {
 
-    public void isMatch()
-    {
+        boolean checking = true;
+        int offset = 1;
 
-        if( colIndex > 0)
-        {
-            checkLeft();
-        }
-        if( colIndex +1 < Grid.COLS)
+            // start checking all sides, starting with RIGHT-side
+            while (checking)
+            {
+                if (this.image == Grid.g[colIndex + offset][rowIndex].image) // I THINK THIS IS THE PROBLEM GRID.G IS NOT BEING REFRESHED AS IT IS STATIC AND THEREFORE IT NEVER CHANGES
+                {
+                    Log.d("myApp", "1st match!");
+                    if (offset >= 3) {
+                        for (int i = offset; i >= 0; i--)
+                        {
+                            Log.d("myApp", "3 matches!");
+                            Grid.g[colIndex + offset][rowIndex].food = null;
+                        }
+                    }
+                    offset++;
+                }
+                else
+                {
+                    Log.d("myApp", "No match (RIGHT-side)");
+                    checking = false;
+                    offset = 1;
+                }
+            }
+
+
+       /* if( colIndex +1 < Grid.COLS)
         {
            checkRight();
         }
-       /* if( rowIndex > 0)
+        if( rowIndex > 0)
         {
             checkBottom();
         }
@@ -112,6 +134,40 @@ public class FoodPiece {
         {
             checkTop();
         }*/
+
+
+        }
+
+
+    private void checkRight()
+    {
+        Log.d("myApp", "Have entered into checkRight()");
+        boolean checking = true;
+        int offset = 1;
+        while(checking)
+        {
+            if(this.image == Grid.g[colIndex + offset][rowIndex].image)
+            {
+                Log.d("myApp", "Have entered into offset");
+                offset++;
+                //Grid.g[colIndex + offset][rowIndex].image = null;
+                if(offset >= 3) {
+                    for (int i = offset - 1; i >= 0; i--) {
+                        Grid.g[colIndex + offset][rowIndex].image = null;
+                        //Grid.g[colIndex + i][rowIndex].x = 100000;
+                        //Grid.g[colIndex + i][rowIndex].food = FoodType.COUNT;
+                    }
+                }
+
+            }
+            else
+            {
+                Log.d("myApp", "Have exited into offset");
+                checking = false;
+            }
+        }
+
+
 
     }
 
@@ -142,35 +198,7 @@ public class FoodPiece {
             }
         }
     }
-    private void checkRight()
-    {
-        boolean flag = false;
-        int offset = 1;
-        while(!flag)
-        {
-            offset++;
-            if(colIndex + offset < Grid.COLS) {
-                if (this.food == Grid.g[colIndex + offset][rowIndex].food) {
-                    //Grid.g[colIndex + offset][rowIndex].image = null;
-                }
-                else
-                {
-                    flag = true;
-                }
-            }
-            else
-            {
-                flag = true;
-            }
-        }
-        if(offset >= 3) {
-            for (int i = offset - 1; i >= 0; i--) {
-                Grid.g[colIndex + i][rowIndex].x = 100000;
-                Grid.g[colIndex + i][rowIndex].food = FoodType.COUNT;
-            }
-        }
 
-    }
     private void checkBottom()
     {
         boolean flag = false;
