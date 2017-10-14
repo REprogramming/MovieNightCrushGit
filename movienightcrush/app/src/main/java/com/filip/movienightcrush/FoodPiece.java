@@ -25,28 +25,25 @@ public class FoodPiece {
     int y;
     int rowIndex;
     int colIndex;
-    public Pixmap image;
+    Pixmap image;
     boolean isMatched = false;
 
     List<FoodType> randomList;
     int iteration;
     List<FoodPiece> tempMatches;
 
+    // constructor
     public FoodPiece(int _x, int _y, FoodType _foodType, Graphics g, int _colIndex, int _rowIndex)
     {
         tempMatches = new ArrayList<FoodPiece>();
-
         x=_x;
         y=_y;
         colIndex = _colIndex;
         rowIndex = _rowIndex;
         food = _foodType;
-
         randomList = new ArrayList<FoodType>();
 
         setRandom(_foodType, randomList);
-
-
         switch(food)
         {
             case POPCORN:
@@ -73,47 +70,74 @@ public class FoodPiece {
             case FRIES:
                 image = g.newPixmap("fries.png", Graphics.PixmapFormat.RGB565);
                 break;
+            case EMPTY:
+                image = g.newPixmap("empty.png", Graphics.PixmapFormat.RGB565);
+                break;
         }
-
     }
-
 
     public void isMatch()
     {
-
        CheckHorizontal();
 
-        if(Grid.horizontalMatches.size() >= 2)
+        if(Grid.horizontalMatchesObj.size() >= 2)
         {
-            for (int offset:Grid.horizontalMatches) {
+            /*for (int offset:Grid.horizontalMatches) {
                 Grid.g[colIndex + offset][rowIndex].isMatched = true;
                 Grid.g[colIndex + offset][rowIndex].x = 100000;
                 Grid.g[colIndex + offset][rowIndex].food = FoodType.COUNT;
+            }*/
+
+            for (FoodPiece collectedFood : Grid.horizontalMatchesObj)
+            {
+                collectedFood.isMatched = true;
+                collectedFood.x = 100000;
+                collectedFood.food = FoodType.EMPTY;
+                //TODO: get the empty.png image from the assets folder
+                collectedFood.food = FoodType.COUNT;
             }
+
             this.isMatched = true;
             this.x = 100000;
+            this.food = FoodType.EMPTY;
+            //TODO: get the empty.png image from the assets folder
+            this.getFoodImage();
             this.food = FoodType.COUNT;
             //ShiftPieces();
         }
 
         CheckVertical();
 
-        if(Grid.verticalMatches.size() >= 2)
+        if(Grid.verticalMatchesObj.size() >= 2)
         {
-            for (int offset:Grid.verticalMatches) {
+            /*for (int offset:Grid.verticalMatches) {
                 Grid.g[colIndex][rowIndex + offset].isMatched = true;
                 Grid.g[colIndex][rowIndex + offset].x = 100000;
                 Grid.g[colIndex][rowIndex + offset].food = FoodType.COUNT;
+            }*/
+
+            for (FoodPiece collectedFood : Grid.verticalMatchesObj)
+            {
+                collectedFood.isMatched = true;
+                collectedFood.x = 100000;
+                collectedFood.food = FoodType.EMPTY;
+                //TODO: get the empty.png image from the assets folder
+                collectedFood.getFoodImage();
+                collectedFood.food = FoodType.COUNT;
             }
+
             this.isMatched = true;
             this.x = 100000;
+            this.food = FoodType.EMPTY;
+            //TODO: get the empty.png image from the assets folder
             this.food = FoodType.COUNT;
         }
 
     }
 
     private void CheckHorizontal(){
-        Grid.horizontalMatches.clear();
+        //Grid.horizontalMatches.clear();
+        Grid.horizontalMatchesObj.clear();
         boolean flag = false;
         int iterator = 0;
 
@@ -125,7 +149,8 @@ public class FoodPiece {
             {
                 if(this.food == Grid.g[colIndex - iterator][rowIndex].food)
                 {
-                    Grid.horizontalMatches.add(-iterator);
+                    //Grid.horizontalMatches.add(-iterator);
+                    Grid.horizontalMatchesObj.add(Grid.g[colIndex - iterator][rowIndex]);
                 }
                 else
                 {
@@ -149,7 +174,8 @@ public class FoodPiece {
             {
                 if(this.food == Grid.g[colIndex + iterator][rowIndex].food)
                 {
-                    Grid.horizontalMatches.add(iterator);
+                    //Grid.horizontalMatches.add(iterator);
+                    Grid.horizontalMatchesObj.add(Grid.g[colIndex + iterator][rowIndex]);
                 }
                 else
                 {
@@ -164,7 +190,8 @@ public class FoodPiece {
     }
 
     private void CheckVertical(){
-        Grid.verticalMatches.clear();
+        // Grid.verticalMatches.clear();
+        Grid.verticalMatchesObj.clear();
         boolean flag = false;
         int iterator = 0;
 
@@ -176,7 +203,8 @@ public class FoodPiece {
             {
                 if(this.food == Grid.g[colIndex][rowIndex - iterator].food)
                 {
-                    Grid.verticalMatches.add(-iterator);
+                    //Grid.verticalMatches.add(-iterator);
+                    Grid.verticalMatchesObj.add(Grid.g[colIndex][rowIndex - iterator]);
                 }
                 else
                 {
@@ -198,9 +226,9 @@ public class FoodPiece {
             iterator++;
             if(rowIndex + iterator < Grid.ROWS)
             {
-                if(this.food == Grid.g[colIndex][rowIndex+ iterator].food)
+                if(this.food == Grid.g[colIndex][rowIndex + iterator].food)
                 {
-                    Grid.verticalMatches.add(iterator);
+                    Grid.verticalMatchesObj.add(Grid.g[colIndex][rowIndex+ iterator]);
                 }
                 else
                 {
@@ -218,8 +246,6 @@ public class FoodPiece {
     {
         int matchDepth = CheckForMatch(_foodType);
 
-
-
         if(matchDepth > 2)
         {
             if(randomList.size() == 0) {
@@ -228,8 +254,9 @@ public class FoodPiece {
                         randomList.add(FoodType.values()[i]);
                     }
                 }
-
-            }else {
+            }
+            else
+            {
                 for (int i = 0; i < randomList.size(); i++) {
                     if (randomList.get(i) == _foodType) {
                         randomList.remove(i);
@@ -238,19 +265,16 @@ public class FoodPiece {
                 }
             }
 
-
-
             Random rn = new Random();
             int answer = rn.nextInt(randomList.size()) + 0;
 
             setRandom(randomList.get(answer), randomList);
 
-        }else
+        }
+        else
         {
             food = _foodType;
         }
-
-
     }
 
     public int CheckForMatch(FoodType _foodType)
@@ -310,6 +334,17 @@ public class FoodPiece {
     {
         g.drawPixmap(image,x, y);
     }
+
+    public void setFoodImage(Pixmap someImage){
+
+       image = someImage;
+    }
+
+    public Pixmap getFoodImage(){
+
+        return image;
+    }
+
 
 
 }

@@ -14,7 +14,8 @@ public enum FoodType {
     TICKET(5), //5
     HOTDOG(6), //6
     FRIES(7), //7
-    COUNT(8); //8
+    COUNT(8), //8
+    EMPTY(9); // 9
 
     private final int value;
 

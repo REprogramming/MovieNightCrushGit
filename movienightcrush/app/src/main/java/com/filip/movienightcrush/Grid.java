@@ -22,6 +22,9 @@ public class Grid {
     static List<Integer> horizontalMatches = new ArrayList<Integer>();
     static List<Integer> verticalMatches = new ArrayList<Integer>();
 
+    static List<FoodPiece> horizontalMatchesObj = new ArrayList<FoodPiece>();
+    static List<FoodPiece> verticalMatchesObj = new ArrayList<FoodPiece>();
+
     static final int ROWS = 9;
     static final int COLS = 9;
     static final int TILE_WIDTH = 72;
@@ -39,8 +42,7 @@ public class Grid {
             lastTouch = food;
         }else
         {
-
-            if(((food.colIndex == lastTouch.colIndex-1 ||food.colIndex == lastTouch.colIndex+1 )&&(food.rowIndex == lastTouch.rowIndex))
+            if(((food.colIndex == lastTouch.colIndex-1 || food.colIndex == lastTouch.colIndex+1 )&&(food.rowIndex == lastTouch.rowIndex))
                     || ((food.rowIndex == lastTouch.rowIndex-1 ||food.rowIndex == lastTouch.rowIndex+1)&& (food.colIndex == lastTouch.colIndex))) {
 
                 //temp variables
@@ -48,16 +50,15 @@ public class Grid {
                 Pixmap tempPix = food.image;
 
                 //swapping
-                g[food.colIndex][food.rowIndex].image = g[lastTouch.colIndex][lastTouch.rowIndex].image;
                 g[food.colIndex][food.rowIndex].food = g[lastTouch.colIndex][lastTouch.rowIndex].food;
-                g[lastTouch.colIndex][lastTouch.rowIndex].image = tempPix;
                 g[lastTouch.colIndex][lastTouch.rowIndex].food = tempType;
 
+                g[food.colIndex][food.rowIndex].setFoodImage(g[lastTouch.colIndex][lastTouch.rowIndex].image);
+                g[lastTouch.colIndex][lastTouch.rowIndex].setFoodImage(tempPix);
 
                 //Check for matches
                 g[lastTouch.colIndex][lastTouch.rowIndex].isMatch();
                 g[food.colIndex][food.rowIndex].isMatch();
-
             }
 
             lastTouch = null;
