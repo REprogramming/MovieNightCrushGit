@@ -10,6 +10,7 @@ import com.filip.androidgames.framework.Graphics;
 import com.filip.androidgames.framework.Pixmap;
 import com.filip.androidgames.framework.impl.AndroidGame;
 
+import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,15 +21,16 @@ import java.util.Random;
 
 public class FoodPiece {
     FoodType food;
-    public int x;
-    public int y;
-    public int rowIndex;
-    public int colIndex;
+    int x;
+    int y;
+    int rowIndex;
+    int colIndex;
     public Pixmap image;
+    boolean isMatched = false;
+
     List<FoodType> randomList;
     int iteration;
     List<FoodPiece> tempMatches;
-
 
     public FoodPiece(int _x, int _y, FoodType _foodType, Graphics g, int _colIndex, int _rowIndex)
     {
@@ -73,142 +75,57 @@ public class FoodPiece {
                 break;
         }
 
-        //Input.TouchEvent.TOUCH_UP;
+    }
 
-        /*image.setOnTouchListener(new OnSwipeTouchListener(AndroidGame.GetContext()) {
-            public void onSwipeTop() {
-                //Toast.makeText(MyActivity.this, "top", Toast.LENGTH_SHORT).show();
-            }
-            public void onSwipeRight() {
-                // Toast.makeText(MyActivity.this, "right", Toast.LENGTH_SHORT).show();
-            }
-            public void onSwipeLeft() {
-                ///Toast.makeText(MyActivity.this, "left", Toast.LENGTH_SHORT).show();
-            }
-            public void onSwipeBottom() {
-                //Toast.makeText(MyActivity.this, "bottom", Toast.LENGTH_SHORT).show();
-            }
 
-        });*/
+    public void isMatch()
+    {
+
+       CheckHorizontal();
+
+        if(Grid.horizontalMatches.size() >= 2)
+        {
+            for (int offset:Grid.horizontalMatches) {
+                Grid.g[colIndex + offset][rowIndex].isMatched = true;
+                Grid.g[colIndex + offset][rowIndex].x = 100000;
+                Grid.g[colIndex + offset][rowIndex].food = FoodType.COUNT;
+            }
+            this.isMatched = true;
+            this.x = 100000;
+            this.food = FoodType.COUNT;
+            //ShiftPieces();
+        }
+
+        CheckVertical();
+
+        if(Grid.verticalMatches.size() >= 2)
+        {
+            for (int offset:Grid.verticalMatches) {
+                Grid.g[colIndex][rowIndex + offset].isMatched = true;
+                Grid.g[colIndex][rowIndex + offset].x = 100000;
+                Grid.g[colIndex][rowIndex + offset].food = FoodType.COUNT;
+            }
+            this.isMatched = true;
+            this.x = 100000;
+            this.food = FoodType.COUNT;
+        }
 
     }
 
-    public void matchCheck() {
-
-        boolean checking = true;
-        int offset = 1;
-
-            // start checking all sides, starting with RIGHT-side
-            while (checking)
-            {
-                if (this.image == Grid.g[colIndex + offset][rowIndex].image) // I THINK THIS IS THE PROBLEM GRID.G IS NOT BEING REFRESHED AS IT IS STATIC AND THEREFORE IT NEVER CHANGES
-                {
-                    Log.d("myApp", "1st match!");
-                    if (offset >= 3) {
-                        for (int i = offset; i >= 0; i--)
-                        {
-                            Log.d("myApp", "3 matches!");
-                            Grid.g[colIndex + offset][rowIndex].food = null;
-                        }
-                    }
-                    offset++;
-                }
-                else
-                {
-                    Log.d("myApp", "No match (RIGHT-side)");
-                    checking = false;
-                    offset = 1;
-                }
-            }
-
-
-       /* if( colIndex +1 < Grid.COLS)
-        {
-           checkRight();
-        }
-        if( rowIndex > 0)
-        {
-            checkBottom();
-        }
-        if( rowIndex +1 < Grid.ROWS)
-        {
-            checkTop();
-        }*/
-
-
-        }
-
-
-    private void checkRight()
-    {
-        Log.d("myApp", "Have entered into checkRight()");
-        boolean checking = true;
-        int offset = 1;
-        while(checking)
-        {
-            if(this.image == Grid.g[colIndex + offset][rowIndex].image)
-            {
-                Log.d("myApp", "Have entered into offset");
-                offset++;
-                //Grid.g[colIndex + offset][rowIndex].image = null;
-                if(offset >= 3) {
-                    for (int i = offset - 1; i >= 0; i--) {
-                        Grid.g[colIndex + offset][rowIndex].image = null;
-                        //Grid.g[colIndex + i][rowIndex].x = 100000;
-                        //Grid.g[colIndex + i][rowIndex].food = FoodType.COUNT;
-                    }
-                }
-
-            }
-            else
-            {
-                Log.d("myApp", "Have exited into offset");
-                checking = false;
-            }
-        }
-
-
-
-    }
-
-    private void checkLeft()
-    {
-        boolean flag = true;
-        int offset = 0;
-        while(flag)
-        {
-            offset++;
-            if(colIndex - offset >= 0) {
-                if (this.food == Grid.g[colIndex - offset][rowIndex].food) {
-                    //Grid.g[colIndex - offset][rowIndex].x = 100000;
-                }
-                else
-                {
-                    flag = false;
-                }
-            }else
-            {
-                flag = false;
-            }
-        }
-        if(offset >= 3) {
-            for (int i = offset - 1; i >= 0; i--) {
-                Grid.g[colIndex - i][rowIndex].x = 100000;
-                Grid.g[colIndex - i][rowIndex].food = FoodType.COUNT;
-            }
-        }
-    }
-
-    private void checkBottom()
-    {
+    private void CheckHorizontal(){
+        Grid.horizontalMatches.clear();
         boolean flag = false;
-        int offset = 1;
+        int iterator = 0;
+
+        //left
         while(!flag)
         {
-            offset++;
-            if(rowIndex + offset < Grid.ROWS) {
-                if (this.food == Grid.g[colIndex][rowIndex + offset].food) {
-                    //Grid.g[colIndex + offset][rowIndex].image = null;
+            iterator++;
+            if(colIndex - iterator >=0)
+            {
+                if(this.food == Grid.g[colIndex - iterator][rowIndex].food)
+                {
+                    Grid.horizontalMatches.add(-iterator);
                 }
                 else
                 {
@@ -220,38 +137,79 @@ public class FoodPiece {
                 flag = true;
             }
         }
-        if(offset >= 3) {
-            for (int i = offset - 1; i >= 0; i--) {
-                Grid.g[colIndex][rowIndex + i].x = 100000;
-                Grid.g[colIndex][rowIndex + i].food = FoodType.COUNT;
-            }
-        }
 
-    }
-    private void checkTop()
-    {
-        boolean flag = true;
-        int offset = 0;
-        while(flag)
+        flag = false;
+        iterator = 0;
+
+        //right
+        while(!flag)
         {
-            offset++;
-            if(rowIndex - offset >= 0) {
-                if (this.food == Grid.g[colIndex][rowIndex - offset].food) {
-                    //Grid.g[colIndex - offset][rowIndex].x = 100000;
+            iterator++;
+            if(colIndex + iterator < Grid.COLS)
+            {
+                if(this.food == Grid.g[colIndex + iterator][rowIndex].food)
+                {
+                    Grid.horizontalMatches.add(iterator);
                 }
                 else
                 {
-                    flag = false;
+                    flag = true;
                 }
-            }else
+            }
+            else
             {
-                flag = false;
+                flag = true;
             }
         }
-        if(offset >= 3) {
-            for (int i = offset - 1; i >= 0; i--) {
-                Grid.g[colIndex][rowIndex - i].x = 100000;
-                Grid.g[colIndex][rowIndex - i].food = FoodType.COUNT;
+    }
+
+    private void CheckVertical(){
+        Grid.verticalMatches.clear();
+        boolean flag = false;
+        int iterator = 0;
+
+        //top
+        while(!flag)
+        {
+            iterator++;
+            if(rowIndex - iterator >=0)
+            {
+                if(this.food == Grid.g[colIndex][rowIndex - iterator].food)
+                {
+                    Grid.verticalMatches.add(-iterator);
+                }
+                else
+                {
+                    flag = true;
+                }
+            }
+            else
+            {
+                flag = true;
+            }
+        }
+
+        flag = false;
+        iterator = 0;
+
+        //right
+        while(!flag)
+        {
+            iterator++;
+            if(rowIndex + iterator < Grid.ROWS)
+            {
+                if(this.food == Grid.g[colIndex][rowIndex+ iterator].food)
+                {
+                    Grid.verticalMatches.add(iterator);
+                }
+                else
+                {
+                    flag = true;
+                }
+            }
+            else
+            {
+                flag = true;
             }
         }
     }
@@ -344,74 +302,8 @@ public class FoodPiece {
             if(matchDepth > 2)
                 return matchDepth;
         }
-        /*else if(colIndex < Grid.COLS)
-        {
-            //check right
-            if(Grid.g[colIndex+1][rowIndex].food == _foodType)
-                isMatch = matchDepth(1, _foodType, iteration);
-        }*/
-        /*if(colIndex > 0)
-        {
-            //check top
-            if(Grid.g[colIndex-1][rowIndex].food == _foodType) {
-                iteration = 1;
-                matchDepth = matchDepth(0, _foodType);
-            }
-            if(matchDepth > 2)
-                return matchDepth;
-            //
-        }*/
-        /*
-        else if(rowIndex < Grid.ROWS)
-        {
-            //check botton
-            if(Grid.g[colIndex][rowIndex+1].food == _foodType)
-                isMatch = matchDepth(2, _foodType, iteration);
-        }*/
 
         return matchDepth;
-    }
-
-    ///         ^ - 0
-    ///     <-3     > - 1
-    ///         _ - 2
-    ///
-    private int matchDepth(int direction, FoodType _foodType)
-    {
-        iteration++;
-        switch(direction)
-        {
-            case 0:
-                if(colIndex-iteration >= 0) {
-                    if (Grid.g[colIndex - iteration][rowIndex].food == _foodType) {
-                        matchDepth(direction, _foodType);
-                    }
-                }
-                break;
-            case 1:
-                if(colIndex+iteration < Grid.COLS) {
-                    if (Grid.g[colIndex + iteration][rowIndex].food == _foodType) {
-                        matchDepth(direction, _foodType);
-                    }
-                }
-                break;
-            case 2:
-                if(rowIndex+iteration < Grid.ROWS) {
-                    if (Grid.g[colIndex][rowIndex + iteration].food == _foodType) {
-                        matchDepth(direction, _foodType);
-                    }
-                }
-                break;
-            case 3:
-                if(rowIndex-iteration >= 0) {
-                    if (Grid.g[colIndex][rowIndex - iteration].food == _foodType) {
-                        matchDepth(direction, _foodType);
-                    }
-                }
-                break;
-        }
-
-        return iteration;
     }
 
     public void show(Graphics g)

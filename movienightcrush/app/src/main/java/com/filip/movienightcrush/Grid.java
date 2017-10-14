@@ -9,6 +9,8 @@ import com.filip.androidgames.framework.Graphics;
 import com.filip.androidgames.framework.Pixmap;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Grid {
@@ -17,6 +19,8 @@ public class Grid {
     Random rn = new Random();
 
     static FoodPiece lastTouch;
+    static List<Integer> horizontalMatches = new ArrayList<Integer>();
+    static List<Integer> verticalMatches = new ArrayList<Integer>();
 
     static final int ROWS = 9;
     static final int COLS = 9;
@@ -26,48 +30,24 @@ public class Grid {
     int centerWtoScreen = 80;
     int centerHtoScreen = 260;
 
-    static FoodPiece[][] g = new FoodPiece[COLS][ROWS]; // this will never change either it's images or it's food items.
+    static FoodPiece[][] g = new FoodPiece[COLS][ROWS];
 
     public void swap(FoodPiece food)
     {
         if(lastTouch == null)
         {
             lastTouch = food;
-        }
-        else
+        }else
         {
-            if(food.colIndex == lastTouch.colIndex - 1
-                    || food.colIndex == lastTouch.colIndex + 1
-                        || food.rowIndex == lastTouch.rowIndex - 1
-                            || food.rowIndex == lastTouch.rowIndex + 1
-                                && food.rowIndex == lastTouch.rowIndex || food.colIndex == lastTouch.colIndex)
-            {
-                // Swap food items
+
+            if(((food.colIndex == lastTouch.colIndex-1 ||food.colIndex == lastTouch.colIndex+1 )&&(food.rowIndex == lastTouch.rowIndex))
+                    || ((food.rowIndex == lastTouch.rowIndex-1 ||food.rowIndex == lastTouch.rowIndex+1)&& (food.colIndex == lastTouch.colIndex))) {
+
+                //temp variables
                 FoodType tempType = food.food;
                 Pixmap tempPix = food.image;
 
-                // Change images of objects, but keep them where they are (no passing by reference in Java?!?)
-                this.g[food.colIndex][food.rowIndex].image = g[lastTouch.colIndex][lastTouch.rowIndex].image;
-                this.g[lastTouch.colIndex][lastTouch.rowIndex].image = tempPix;
-                //this.g[food.colIndex][food.rowIndex].food = g[lastTouch.colIndex][lastTouch.rowIndex].food;
-            }
-                // Now..check for matches
-                // I don't think having 2 checks on two different objects is how candy crush works, it's a match from the lastTouch object...
-                this.g[lastTouch.colIndex][lastTouch.rowIndex].matchCheck();
-                //this.g[food.colIndex][food.rowIndex].matchCheck();
-
-                lastTouch = null;
-            }
-
-
-            /*if(((food.colIndex == lastTouch.colIndex-1
-                        ||food.colIndex == lastTouch.colIndex+1 )&&(food.rowIndex == lastTouch.rowIndex))
-                            || ((food.rowIndex == lastTouch.rowIndex-1
-                                ||food.rowIndex == lastTouch.rowIndex+1)
-                                    && (food.colIndex == lastTouch.colIndex))) {
-
-                FoodType tempType = food.food;
-                Pixmap tempPix = food.image;
+                //swapping
                 g[food.colIndex][food.rowIndex].image = g[lastTouch.colIndex][lastTouch.rowIndex].image;
                 g[food.colIndex][food.rowIndex].food = g[lastTouch.colIndex][lastTouch.rowIndex].food;
                 g[lastTouch.colIndex][lastTouch.rowIndex].image = tempPix;
@@ -76,22 +56,13 @@ public class Grid {
 
                 //Check for matches
                 g[lastTouch.colIndex][lastTouch.rowIndex].isMatch();
-
-
                 g[food.colIndex][food.rowIndex].isMatch();
 
+            }
 
-                lastTouch = null;
+            lastTouch = null;
 
-            }*/
-            //g[food.colIndex][food.rowIndex].CheckForMatch( g[food.colIndex][food.rowIndex].food);
-
-            /*for (int i = 0; i <  ROWS; i++) {
-                for (int j = 0; j < COLS; j++) {
-                    g[i][j].CheckForMatch(g[i][j].food);
-                }
-            }*/
-
+        }
     }
 
     public Grid(Graphics graphics)
@@ -101,7 +72,6 @@ public class Grid {
             for(int j=0; j < ROWS; j++)
             {
                 int answer = rn.nextInt(8) + 0;
-                //g[i][j] = new FoodPiece(i * TILE_WIDTH + centerWtoScreen, j * TILE_HEIGHT + centerHtoScreen,FoodType.BEER, graphics, i, j);
                 g[i][j] = new FoodPiece(i * TILE_WIDTH + centerWtoScreen, j * TILE_HEIGHT + centerHtoScreen, FoodType.values()[answer], graphics, i, j);
                 Log.d(TAG, "Grid: " + i + " " + j + "Foodtype: " + FoodType.values()[answer]);
             }
