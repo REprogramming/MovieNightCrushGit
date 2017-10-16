@@ -66,6 +66,30 @@ public class Grid {
         }
     }
 
+    public static void CheckMatches()
+    {
+        for (int i = 0; i <  COLS; i++) {
+            for (int j = 0; j < ROWS; j++) {
+                g[i][j].isMatch();
+            }
+        }
+    }
+
+    public static void  moveUp(FoodPiece A, FoodPiece B)
+    {
+        FoodType tempType = A.food;
+        Pixmap tempPix = A.image;
+        Boolean tempMatch = A.isMatched;
+
+        A.image = B.image;
+        A.food = B.food;
+        A.isMatched = B.isMatched;
+
+        B.image = tempPix;
+        B.food = tempType;
+        B.isMatched = tempMatch;
+    }
+
     public Grid(Graphics graphics)
     {
         for (int i = 0; i <  COLS; i++)

@@ -2,16 +2,15 @@ package com.filip.movienightcrush;
 
 import android.os.Debug;
 import android.util.Log;
-import android.view.MotionEvent;
 
 import com.filip.androidgames.framework.Input;
 import com.filip.movienightcrush.OnSwipeTouchListener;
 import com.filip.androidgames.framework.Graphics;
 import com.filip.androidgames.framework.Pixmap;
-import com.filip.androidgames.framework.impl.AndroidGame;
 
-import java.security.acl.Group;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -30,12 +29,10 @@ public class FoodPiece {
 
     List<FoodType> randomList;
     int iteration;
-    List<FoodPiece> tempMatches;
 
     // constructor
     public FoodPiece(int _x, int _y, FoodType _foodType, Graphics g, int _colIndex, int _rowIndex)
     {
-        tempMatches = new ArrayList<FoodPiece>();
         x=_x;
         y=_y;
         colIndex = _colIndex;
@@ -76,61 +73,104 @@ public class FoodPiece {
         }
     }
 
+    private void ShiftPieces()
+    {
+        if(Grid.verticalMatchesObj.size() >= 2) {
+            Grid.verticalMatchesObj.add(this);
+        }
+        else
+        {
+            Grid.horizontalMatchesObj.add(this);
+        }
+
+        for (FoodPiece food: Grid.horizontalMatchesObj) {
+            boolean flag = true;
+            int iterator = 0;
+            while(flag)
+            {
+                iterator++;
+                if(food.rowIndex - iterator >= 0) {
+                    //swap
+                    Grid.moveUp(Grid.g[food.colIndex][food.rowIndex - iterator + 1], Grid.g[food.colIndex][food.rowIndex - iterator]);
+                }
+                else
+                {
+                    flag = false;
+                }
+            }
+        }
+
+
+        Collections.sort(Grid.verticalMatchesObj, new Comparator<FoodPiece>()
+        {
+            @Override
+            public int compare(FoodPiece lhs, FoodPiece rhs) {
+
+                return Integer.valueOf(lhs.rowIndex).compareTo(rhs.rowIndex);
+            }
+        });
+
+
+        for (FoodPiece food: Grid.verticalMatchesObj) {
+            boolean flag = true;
+            int iterator = 0;
+            while(flag)
+            {
+                iterator++;
+                if(food.rowIndex - iterator >= 0)
+                {
+                    //swap
+                    Grid.moveUp(Grid.g[food.colIndex][food.rowIndex - iterator + 1], Grid.g[food.colIndex][food.rowIndex - iterator]);
+                }
+                else
+                {
+                    flag = false;
+                }
+            }
+        }
+
+        Grid.CheckMatches();
+
+    }
+
+
     public void isMatch()
     {
+        if(this.food == FoodType.COUNT)
+            return;
+
        CheckHorizontal();
 
         if(Grid.horizontalMatchesObj.size() >= 2)
         {
-            /*for (int offset:Grid.horizontalMatches) {
-                Grid.g[colIndex + offset][rowIndex].isMatched = true;
-                Grid.g[colIndex + offset][rowIndex].x = 100000;
-                Grid.g[colIndex + offset][rowIndex].food = FoodType.COUNT;
-            }*/
-
             for (FoodPiece collectedFood : Grid.horizontalMatchesObj)
             {
                 collectedFood.isMatched = true;
-                collectedFood.x = 100000;
-                collectedFood.food = FoodType.EMPTY;
-                //TODO: get the empty.png image from the assets folder
+                //collectedFood.x = 100000;
                 collectedFood.food = FoodType.COUNT;
             }
 
-            this.isMatched = true;
-            this.x = 100000;
-            this.food = FoodType.EMPTY;
-            //TODO: get the empty.png image from the assets folder
-            this.getFoodImage();
-            this.food = FoodType.COUNT;
-            //ShiftPieces();
         }
 
         CheckVertical();
 
         if(Grid.verticalMatchesObj.size() >= 2)
         {
-            /*for (int offset:Grid.verticalMatches) {
-                Grid.g[colIndex][rowIndex + offset].isMatched = true;
-                Grid.g[colIndex][rowIndex + offset].x = 100000;
-                Grid.g[colIndex][rowIndex + offset].food = FoodType.COUNT;
-            }*/
 
             for (FoodPiece collectedFood : Grid.verticalMatchesObj)
             {
                 collectedFood.isMatched = true;
-                collectedFood.x = 100000;
-                collectedFood.food = FoodType.EMPTY;
-                //TODO: get the empty.png image from the assets folder
-                collectedFood.getFoodImage();
+                //collectedFood.x = 100000;
                 collectedFood.food = FoodType.COUNT;
             }
 
+        }
+
+        if(Grid.verticalMatchesObj.size() >= 2 || Grid.horizontalMatchesObj.size() >= 2) {
             this.isMatched = true;
-            this.x = 100000;
-            this.food = FoodType.EMPTY;
-            //TODO: get the empty.png image from the assets folder
+            //this.x = 100000;
             this.food = FoodType.COUNT;
+            ShiftPieces();
         }
 
     }
@@ -195,16 +235,15 @@ public class FoodPiece {
         boolean flag = false;
         int iterator = 0;
 
-        //top
+        //bottom
         while(!flag)
         {
             iterator++;
-            if(rowIndex - iterator >=0)
+            if(rowIndex + iterator < Grid.ROWS)
             {
-                if(this.food == Grid.g[colIndex][rowIndex - iterator].food)
+                if(this.food == Grid.g[colIndex][rowIndex + iterator].food)
                 {
-                    //Grid.verticalMatches.add(-iterator);
-                    Grid.verticalMatchesObj.add(Grid.g[colIndex][rowIndex - iterator]);
+                    Grid.verticalMatchesObj.add(Grid.g[colIndex][rowIndex+ iterator]);
                 }
                 else
                 {
@@ -220,15 +259,16 @@ public class FoodPiece {
         flag = false;
         iterator = 0;
 
-        //right
+        //top
         while(!flag)
         {
             iterator++;
-            if(rowIndex + iterator < Grid.ROWS)
+            if(rowIndex - iterator >=0)
             {
-                if(this.food == Grid.g[colIndex][rowIndex + iterator].food)
+                if(this.food == Grid.g[colIndex][rowIndex - iterator].food)
                 {
-                    Grid.verticalMatchesObj.add(Grid.g[colIndex][rowIndex+ iterator]);
+                    //Grid.verticalMatches.add(-iterator);
+                    Grid.verticalMatchesObj.add(Grid.g[colIndex][rowIndex - iterator]);
                 }
                 else
                 {
@@ -332,7 +372,8 @@ public class FoodPiece {
 
     public void show(Graphics g)
     {
-        g.drawPixmap(image,x, y);
+        if(!isMatched)
+            g.drawPixmap(image,x, y);
     }
 
     public void setFoodImage(Pixmap someImage){

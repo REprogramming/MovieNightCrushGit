@@ -59,8 +59,10 @@ public class GameScreen extends Screen {
                     for(int y = 0; y < 9; y++)
                     {
                         if (inBounds(event, Grid.g[x][y].x, Grid.g[x][y].y, Grid.g[x][y].image.getWidth(), Grid.g[x][y].image.getHeight())){
-                            gameGrid.swap(Grid.g[x][y]);
-                            return;
+                            if(!Grid.g[x][y].isMatched) {
+                                gameGrid.swap(Grid.g[x][y]);
+                                return;
+                            }
                         }
                     }
                 }
