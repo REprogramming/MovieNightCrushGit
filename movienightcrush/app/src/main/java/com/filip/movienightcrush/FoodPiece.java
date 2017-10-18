@@ -92,6 +92,8 @@ public class FoodPiece {
                 if(food.rowIndex - iterator >= 0) {
                     //swap
                     Grid.moveUp(Grid.g[food.colIndex][food.rowIndex - iterator + 1], Grid.g[food.colIndex][food.rowIndex - iterator]);
+                    //Grid.refreshGrid(Grid.g[food.colIndex][food.rowIndex - iterator + 1], Grid.g[food.colIndex][food.rowIndex - iterator]);
+
                 }
                 else
                 {
@@ -121,6 +123,7 @@ public class FoodPiece {
                 {
                     //swap
                     Grid.moveUp(Grid.g[food.colIndex][food.rowIndex - iterator + 1], Grid.g[food.colIndex][food.rowIndex - iterator]);
+
                 }
                 else
                 {
@@ -386,6 +389,20 @@ public class FoodPiece {
         return image;
     }
 
+    public FoodPiece selfRefresh(){
+
+        if (this.rowIndex == 0 && this.isMatched == true)
+            {
+                Random rand = new Random();
+                this.food = FoodType.values()[rand.nextInt(7)];
+                this.image = this.getFoodImage(); // TODO: IMAGE IS NOT CHANGING
+                this.isMatched = false;
+                Log.d("my", "Self-Refreshed tile is now: " + this.food);
+            }
+
+    return this;
+
+    }
 
 
 }

@@ -9,6 +9,7 @@ import com.filip.androidgames.framework.Graphics;
 import com.filip.androidgames.framework.Pixmap;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -24,6 +25,8 @@ public class Grid {
 
     static List<FoodPiece> horizontalMatchesObj = new ArrayList<FoodPiece>();
     static List<FoodPiece> verticalMatchesObj = new ArrayList<FoodPiece>();
+
+    static List<FoodPiece> topHolder = new ArrayList<FoodPiece>();
 
     static final int ROWS = 9;
     static final int COLS = 9;
@@ -88,6 +91,18 @@ public class Grid {
         B.image = tempPix;
         B.food = tempType;
         B.isMatched = tempMatch;
+
+        // Approach A...
+        // FoodPiece self-refresh
+        A.selfRefresh();
+        B.selfRefresh();
+
+
+        // ...or Approach B
+        // Grid refresh
+        if ((A.rowIndex == 0 && A.isMatched == true) || (B.rowIndex == 0 && B.isMatched == true )){
+            //refreshGrid(A,B);
+        }
     }
 
     public Grid(Graphics graphics)
@@ -111,6 +126,23 @@ public class Grid {
                 g[i][j].show(graphic);
             }
         }
+    }
+
+
+    public static void refreshGrid(FoodPiece topFoodPieceA, FoodPiece topFoodPieceB){
+
+            Random rand = new Random();
+
+            topFoodPieceA.food = FoodType.values()[rand.nextInt(6)+0];
+            topFoodPieceA.image = topFoodPieceA.getFoodImage(); // TODO: IMAGE IS NOT CHANGING
+            topFoodPieceA.isMatched = false;
+            Log.d("my", "New FoodTypeA is: " + topFoodPieceA.food);
+
+            topFoodPieceB.food = FoodType.values()[rand.nextInt(6)+0];
+            topFoodPieceB.image = topFoodPieceB.getFoodImage(); // TODO: IMAGE IS NOT CHANGING
+            topFoodPieceB.isMatched = false;
+            Log.d("my", "New FoodTypeB is: " + topFoodPieceB.food);
+
     }
 
 }
